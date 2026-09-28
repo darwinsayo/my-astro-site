@@ -3,7 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 
 const allPosts = await getCollection('blog');
-const posts = allPosts.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+const posts = allPosts.sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime());
 ---
 
 <BaseLayout title="All Dispatches | Proverbial Entropy">
@@ -16,7 +16,7 @@ const posts = allPosts.sort((a, b) => new Date(b.data.date).getTime() - new Date
         {posts.map((post) => (
             <article class="dispatch-card">
                 <div class="dispatch-date">
-                    {new Date(post.data.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                    {new Date(post.data.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                 </div>
                 <h2 class="dispatch-title">
                     <a href={`/dispatches/${post.id}`}>{post.data.title}</a>
