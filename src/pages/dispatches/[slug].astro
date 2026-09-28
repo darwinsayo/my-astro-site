@@ -82,11 +82,15 @@ const { Content } = await render(post); // <-- Use render(post) instead of post.
       <main>
         <article>
           <h1>{post.data.title}</h1>
-          <div class="dispatch-date">
-            <time datetime={new Date(post.data.pubDate).toISOString()}>
-              {new Date(post.data.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-            </time>
-          </div>
+          <<div class="dispatch-date">
+  {post.data.pubDate && !isNaN(new Date(post.data.pubDate).getTime()) ? (
+    <time datetime={new Date(post.data.pubDate).toISOString()}>
+      {new Date(post.data.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+    </time>
+  ) : (
+    <time>{String(post.data.pubDate || 'No Date Provided')}</time>
+  )}
+</div>
           <div class="prose">
             <Content />
           </div>
