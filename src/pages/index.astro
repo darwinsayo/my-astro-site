@@ -1,210 +1,158 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '../layouts/BaseLayout.astro';
 
-// Change 'posts' here to match whatever your markdown folder is called
-const allPosts = await getCollection('posts');
-const recentPosts = allPosts
-  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
-  .slice(0, 2);
+const posts = (await getCollection('blog'))
+  .sort((a, b) => new Date(b.data.pubDate).valueOf() - new Date(a.data.pubDate).valueOf())
+  .slice(0, 3);
 ---
 
-<BaseLayout>
-    <!-- Header -->
-    <header>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Proverbial Entropy</title>
+    <meta name="description" content="Internal musings on modern chaos and the preservation of the soul." />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+    <style>
+      :root {
+        --bg-color: #121212;
+        --surface-color: #1a1a1a;
+        --text-primary: #e6e4df;
+        --text-secondary: #9e9b96;
+        --accent-color: #c5a880;
+        --border-color: #2a2a2a;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-primary);
+        padding: 0 1.5rem;
+        font-family: Plus Jakarta Sans, sans-serif;
+        font-weight: 300;
+        line-height: 1.7;
+      }
+      .container { max-width: 720px; margin: 0 auto; padding: 3rem 0 5rem; }
+      .site-nav {
+        text-transform: uppercase;
+        letter-spacing: .05em;
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+        font-size: .9rem;
+        display: flex;
+      }
+      .site-nav a { color: var(--text-secondary); text-decoration: none; transition: color .2s; }
+      .site-nav a:hover { color: var(--accent-color); }
+      header { text-align: center; border-bottom: 1px solid var(--border-color); margin-bottom: 4rem; padding-bottom: 3rem; }
+      .site-title { letter-spacing: .05em; color: var(--text-primary); margin-bottom: .75rem; font-family: Cormorant Garamond, serif; font-size: 3rem; font-weight: 600; }
+      .site-tagline { color: var(--text-secondary); letter-spacing: .02em; font-family: Cormorant Garamond, serif; font-size: 1.05rem; font-style: italic; }
+      footer { text-align: center; border-top: 1px solid var(--border-color); color: var(--text-secondary); margin-top: 4rem; padding-top: 3rem; font-size: .85rem; }
+      @media (width <= 600px) { .site-title { font-size: 2.3rem; } }
+      
+      .manifesto { color: var(--text-primary); margin-bottom: 4rem; font-size: 1.1rem; }
+      .manifesto p { margin-bottom: 1.5rem; }
+      .manifesto p:first-letter {
+        float: left;
+        color: var(--accent-color);
+        padding-right: .75rem;
+        font-family: Cormorant Garamond, serif;
+        font-size: 3.5rem;
+        line-height: .8;
+      }
+      .dispatches { margin-bottom: 4rem; }
+      .section-header-flex { justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem; display: flex; }
+      .section-heading { color: var(--accent-color); text-transform: uppercase; letter-spacing: .1em; font-family: Cormorant Garamond, serif; font-size: 1.5rem; font-weight: 400; }
+      .view-all { color: var(--text-secondary); letter-spacing: .05em; text-transform: uppercase; font-size: .85rem; text-decoration: none; }
+      .view-all:hover { color: var(--accent-color); }
+      
+      .dispatch-card {
+        background-color: var(--surface-color);
+        border: 1px solid var(--border-color);
+        margin-bottom: 1.5rem;
+        padding: 2rem;
+        transition: border-color .3s;
+      }
+      .dispatch-card:hover { border-color: var(--accent-color); }
+      .dispatch-date { color: var(--text-secondary); text-transform: uppercase; letter-spacing: .05em; margin-bottom: .5rem; font-size: .85rem; }
+      .dispatch-title { margin-bottom: .75rem; font-family: Cormorant Garamond, serif; font-size: 1.8rem; font-weight: 600; }
+      .dispatch-title a { color: var(--text-primary); text-decoration: none; }
+      .dispatch-excerpt { color: var(--text-secondary); margin-bottom: 0; font-size: .95rem; }
+      
+      .subscribe-box { background-color: var(--surface-color); border: 1px solid var(--border-color); text-align: center; margin-top: 4rem; padding: 2.5rem; }
+      .subscribe-box h3 { margin-bottom: .75rem; font-family: Cormorant Garamond, serif; font-size: 2rem; font-weight: 400; }
+      .subscribe-box p { color: var(--text-secondary); margin-bottom: 1.5rem; font-size: .95rem; }
+      .subscribe-form { gap: .5rem; max-width: 450px; margin: 0 auto; display: flex; }
+      .subscribe-input { background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-primary); outline: none; flex: 1; padding: .75rem 1rem; font-family: inherit; font-size: .9rem; }
+      .subscribe-input:focus { border-color: var(--accent-color); }
+      .subscribe-btn { background-color: var(--accent-color); color: var(--bg-color); cursor: pointer; border: none; padding: .75rem 1.5rem; font-family: inherit; font-size: .9rem; font-weight: 500; transition: opacity .2s; }
+      .subscribe-btn:hover { opacity: .9; }
+      @media (width <= 600px) { .subscribe-form { flex-direction: column; } }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Global Navigation -->
+      <nav class="site-nav">
+        <a href="/">Home</a>
+        <a href="/dispatches">All Dispatches</a>
+      </nav>
+
+      <header>
         <h1 class="site-title">Proverbial Entropy</h1>
         <p class="site-tagline">Internal musings on modern chaos and the preservation of the soul.</p>
-    </header>
+      </header>
 
-    <!-- Manifesto -->
-    <section class="manifesto">
+      <section class="manifesto">
         <p>Everything left to itself naturally drifts toward fragmentation. The culture hums with a quiet, persistent static—an endless rush of noise, distraction, and digital displacement that slowly pulls human attention apart at the seams.</p>
         <p>This space is an anonymous record of watching the world unravel, and wondering what happens to the interior life underneath the rubble. Not a call to panic, but an invitation to quiet persistence: building small, stubborn pockets of order where the soul can still breathe.</p>
-    </section>
+      </section>
 
-    <!-- Recent Dispatches Preview -->
-    <section class="dispatches">
+      <section class="dispatches">
         <div class="section-header-flex">
-            <h2 class="section-heading">Recent Dispatches</h2>
-            <a href="/dispatches" class="view-all">View all &rarr;</a>
+          <h2 class="section-heading">Recent Dispatches</h2>
+          <a href="/dispatches" class="view-all">View all &rarr;</a>
         </div>
 
-        {recentPosts.map((post) => (
+        {posts.length === 0 ? (
+          <p style="color: var(--text-secondary);">No dispatches yet.</p>
+        ) : (
+          posts.map((post) => (
             <article class="dispatch-card">
-                <div class="dispatch-date">
-                    {new Date(post.data.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                </div>
-                <h3 class="dispatch-title">
-                    <a href={`/dispatches/${post.id}`}>{post.data.title}</a>
-                </h3>
+              <div class="dispatch-date">
+                <time datetime={post.data.pubDate?.toISOString()}>
+                  {post.data.pubDate?.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                </time>
+              </div>
+              <h3 class="dispatch-title">
+                <a href={`/dispatches/${post.id}`}>{post.data.title}</a>
+              </h3>
+              {post.data.description && (
                 <p class="dispatch-excerpt">{post.data.description}</p>
+              )}
             </article>
-        ))}
-    </section>
+          ))
+        )}
+      </section>
 
-    <!-- Newsletter Subscription -->
-    <section class="subscribe-box">
+      <section class="subscribe-box">
         <h3>Receive New Dispatches</h3>
         <p>Get new writing delivered quietly to your inbox. No noise, just reflections.</p>
         <form class="subscribe-form" onsubmit="event.preventDefault(); alert('Subscribed successfully.');">
-            <input type="email" class="subscribe-input" placeholder="Your email address" required />
-            <button type="submit" class="subscribe-btn">Subscribe</button>
+          <input type="email" class="subscribe-input" placeholder="Your email address" required />
+          <button type="submit" class="subscribe-btn">Subscribe</button>
         </form>
-    </section>
-</BaseLayout>
+      </section>
 
-<style>
-	.manifesto {
-		margin-bottom: 4rem;
-		font-size: 1.1rem;
-		color: var(--text-primary);
-	}
-
-	.manifesto p {
-		margin-bottom: 1.5rem;
-	}
-
-	.manifesto p:first-letter {
-		font-family: 'Cormorant Garamond', serif;
-		font-size: 3.5rem;
-		float: left;
-		line-height: 0.8;
-		padding-right: 0.75rem;
-		color: var(--accent-color);
-	}
-
-	.dispatches {
-		margin-bottom: 4rem;
-	}
-
-	.section-header-flex {
-		display: flex;
-		justify-content: space-between;
-		align-items: baseline;
-		margin-bottom: 1.5rem;
-	}
-
-	.section-heading {
-		font-family: 'Cormorant Garamond', serif;
-		font-size: 1.5rem;
-		color: var(--accent-color);
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
-		font-weight: 400;
-	}
-
-	.view-all {
-		color: var(--text-secondary);
-		font-size: 0.85rem;
-		text-decoration: none;
-		letter-spacing: 0.05em;
-		text-transform: uppercase;
-	}
-
-	.view-all:hover {
-		color: var(--accent-color);
-	}
-
-	.dispatch-card {
-		background-color: var(--surface-color);
-		border: 1px solid var(--border-color);
-		padding: 2rem;
-		margin-bottom: 1.5rem;
-		transition: border-color 0.3s ease;
-	}
-
-	.dispatch-card:hover {
-		border-color: var(--accent-color);
-	}
-
-	.dispatch-date {
-		font-size: 0.85rem;
-		color: var(--text-secondary);
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		margin-bottom: 0.5rem;
-	}
-
-	.dispatch-title {
-		font-family: 'Cormorant Garamond', serif;
-		font-size: 1.8rem;
-		margin-bottom: 0.75rem;
-		font-weight: 600;
-	}
-
-	.dispatch-title a {
-		color: var(--text-primary);
-		text-decoration: none;
-	}
-
-	.dispatch-excerpt {
-		color: var(--text-secondary);
-		font-size: 0.95rem;
-		margin-bottom: 0;
-	}
-
-	.subscribe-box {
-		background-color: var(--surface-color);
-		border: 1px solid var(--border-color);
-		padding: 2.5rem;
-		text-align: center;
-		margin-top: 4rem;
-	}
-
-	.subscribe-box h3 {
-		font-family: 'Cormorant Garamond', serif;
-		font-size: 2rem;
-		margin-bottom: 0.75rem;
-		font-weight: 400;
-	}
-
-	.subscribe-box p {
-		color: var(--text-secondary);
-		font-size: 0.95rem;
-		margin-bottom: 1.5rem;
-	}
-
-	.subscribe-form {
-		display: flex;
-		gap: 0.5rem;
-		max-width: 450px;
-		margin: 0 auto;
-	}
-
-	.subscribe-input {
-		flex: 1;
-		background-color: var(--bg-color);
-		border: 1px solid var(--border-color);
-		padding: 0.75rem 1rem;
-		color: var(--text-primary);
-		font-family: inherit;
-		font-size: 0.9rem;
-		outline: none;
-	}
-
-	.subscribe-input:focus {
-		border-color: var(--accent-color);
-	}
-
-	.subscribe-btn {
-		background-color: var(--accent-color);
-		color: var(--bg-color);
-		border: none;
-		padding: 0.75rem 1.5rem;
-		font-family: inherit;
-		font-weight: 500;
-		font-size: 0.9rem;
-		cursor: pointer;
-		transition: opacity 0.2s ease;
-	}
-
-	.subscribe-btn:hover {
-		opacity: 0.9;
-	}
-
-	@media (max-width: 600px) {
-		.subscribe-form {
-			flex-direction: column;
-		}
-	}
-</style>
+      <!-- Global Footer -->
+      <footer>
+        <p>&copy; 2026 Proverbial Entropy. All rights reserved.</p>
+      </footer>
+    </div>
+  </body>
+</html>
