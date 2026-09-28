@@ -1,0 +1,54 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { 
+  title = "Proverbial Entropy | Personal Portfolio & Blog", 
+  description = "Exploring photography, digital crafting, woodworking, and software deployment." 
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+    <!-- Navigation -->
+    <header class="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur sticky top-0 z-50">
+      <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+        <a href="/" class="font-bold text-lg tracking-tight text-white hover:text-indigo-400 transition flex items-center gap-2">
+          <span class="w-3 h-3 rounded-full bg-indigo-500 inline-block"></span>
+          proverbial<span class="text-indigo-400">entropy</span>.com
+        </a>
+        <nav class="flex gap-6 text-sm font-medium text-slate-300">
+          <a href="/" class="hover:text-indigo-400 transition">Home</a>
+          <a href="/about" class="hover:text-indigo-400 transition">About</a>
+          <a href="/projects" class="hover:text-indigo-400 transition">Projects</a>
+          <a href="/blog" class="hover:text-indigo-400 transition">Blog</a>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content Slot -->
+    <main class="flex-1">
+      <slot />
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 bg-slate-900/40 py-10 mt-20 text-center text-xs text-slate-500">
+      <div class="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+        <p>&copy; {new Date().getFullYear()} proverbialentropy.com. All rights reserved.</p>
+        <p class="text-slate-600">Built with Astro, Tailwind CSS & deployed on Cloudflare Pages.</p>
+      </div>
+    </footer>
+  </body>
+</html>

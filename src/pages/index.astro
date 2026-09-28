@@ -1,0 +1,210 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+// Change 'posts' here to match whatever your markdown folder is called
+const allPosts = await getCollection('posts');
+const recentPosts = allPosts
+  .sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime())
+  .slice(0, 2);
+---
+
+<BaseLayout>
+    <!-- Header -->
+    <header>
+        <h1 class="site-title">Proverbial Entropy</h1>
+        <p class="site-tagline">Internal musings on modern chaos and the preservation of the soul.</p>
+    </header>
+
+    <!-- Manifesto -->
+    <section class="manifesto">
+        <p>Everything left to itself naturally drifts toward fragmentation. The culture hums with a quiet, persistent static—an endless rush of noise, distraction, and digital displacement that slowly pulls human attention apart at the seams.</p>
+        <p>This space is an anonymous record of watching the world unravel, and wondering what happens to the interior life underneath the rubble. Not a call to panic, but an invitation to quiet persistence: building small, stubborn pockets of order where the soul can still breathe.</p>
+    </section>
+
+    <!-- Recent Dispatches Preview -->
+    <section class="dispatches">
+        <div class="section-header-flex">
+            <h2 class="section-heading">Recent Dispatches</h2>
+            <a href="/dispatches" class="view-all">View all &rarr;</a>
+        </div>
+
+        {recentPosts.map((post) => (
+            <article class="dispatch-card">
+                <div class="dispatch-date">
+                    {new Date(post.data.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                </div>
+                <h3 class="dispatch-title">
+                    <a href={`/dispatches/${post.id}`}>{post.data.title}</a>
+                </h3>
+                <p class="dispatch-excerpt">{post.data.description}</p>
+            </article>
+        ))}
+    </section>
+
+    <!-- Newsletter Subscription -->
+    <section class="subscribe-box">
+        <h3>Receive New Dispatches</h3>
+        <p>Get new writing delivered quietly to your inbox. No noise, just reflections.</p>
+        <form class="subscribe-form" onsubmit="event.preventDefault(); alert('Subscribed successfully.');">
+            <input type="email" class="subscribe-input" placeholder="Your email address" required />
+            <button type="submit" class="subscribe-btn">Subscribe</button>
+        </form>
+    </section>
+</BaseLayout>
+
+<style>
+	.manifesto {
+		margin-bottom: 4rem;
+		font-size: 1.1rem;
+		color: var(--text-primary);
+	}
+
+	.manifesto p {
+		margin-bottom: 1.5rem;
+	}
+
+	.manifesto p:first-letter {
+		font-family: 'Cormorant Garamond', serif;
+		font-size: 3.5rem;
+		float: left;
+		line-height: 0.8;
+		padding-right: 0.75rem;
+		color: var(--accent-color);
+	}
+
+	.dispatches {
+		margin-bottom: 4rem;
+	}
+
+	.section-header-flex {
+		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
+		margin-bottom: 1.5rem;
+	}
+
+	.section-heading {
+		font-family: 'Cormorant Garamond', serif;
+		font-size: 1.5rem;
+		color: var(--accent-color);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		font-weight: 400;
+	}
+
+	.view-all {
+		color: var(--text-secondary);
+		font-size: 0.85rem;
+		text-decoration: none;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
+	}
+
+	.view-all:hover {
+		color: var(--accent-color);
+	}
+
+	.dispatch-card {
+		background-color: var(--surface-color);
+		border: 1px solid var(--border-color);
+		padding: 2rem;
+		margin-bottom: 1.5rem;
+		transition: border-color 0.3s ease;
+	}
+
+	.dispatch-card:hover {
+		border-color: var(--accent-color);
+	}
+
+	.dispatch-date {
+		font-size: 0.85rem;
+		color: var(--text-secondary);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-bottom: 0.5rem;
+	}
+
+	.dispatch-title {
+		font-family: 'Cormorant Garamond', serif;
+		font-size: 1.8rem;
+		margin-bottom: 0.75rem;
+		font-weight: 600;
+	}
+
+	.dispatch-title a {
+		color: var(--text-primary);
+		text-decoration: none;
+	}
+
+	.dispatch-excerpt {
+		color: var(--text-secondary);
+		font-size: 0.95rem;
+		margin-bottom: 0;
+	}
+
+	.subscribe-box {
+		background-color: var(--surface-color);
+		border: 1px solid var(--border-color);
+		padding: 2.5rem;
+		text-align: center;
+		margin-top: 4rem;
+	}
+
+	.subscribe-box h3 {
+		font-family: 'Cormorant Garamond', serif;
+		font-size: 2rem;
+		margin-bottom: 0.75rem;
+		font-weight: 400;
+	}
+
+	.subscribe-box p {
+		color: var(--text-secondary);
+		font-size: 0.95rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.subscribe-form {
+		display: flex;
+		gap: 0.5rem;
+		max-width: 450px;
+		margin: 0 auto;
+	}
+
+	.subscribe-input {
+		flex: 1;
+		background-color: var(--bg-color);
+		border: 1px solid var(--border-color);
+		padding: 0.75rem 1rem;
+		color: var(--text-primary);
+		font-family: inherit;
+		font-size: 0.9rem;
+		outline: none;
+	}
+
+	.subscribe-input:focus {
+		border-color: var(--accent-color);
+	}
+
+	.subscribe-btn {
+		background-color: var(--accent-color);
+		color: var(--bg-color);
+		border: none;
+		padding: 0.75rem 1.5rem;
+		font-family: inherit;
+		font-weight: 500;
+		font-size: 0.9rem;
+		cursor: pointer;
+		transition: opacity 0.2s ease;
+	}
+
+	.subscribe-btn:hover {
+		opacity: 0.9;
+	}
+
+	@media (max-width: 600px) {
+		.subscribe-form {
+			flex-direction: column;
+		}
+	}
+</style>

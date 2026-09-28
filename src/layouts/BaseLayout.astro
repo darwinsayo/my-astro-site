@@ -1,0 +1,134 @@
+---
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { 
+  title = "Proverbial Entropy", 
+  description = "Internal musings on modern chaos and the preservation of the soul." 
+} = Astro.props;
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		
+		<!-- Google Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+	</head>
+	<body>
+		<div class="container">
+			<!-- Global Navigation -->
+			<nav class="site-nav">
+				<a href="/">Home</a>
+				<a href="/dispatches">All Dispatches</a>
+			</nav>
+
+            {/* This is where individual page content gets injected */}
+            <slot />
+
+			<!-- Global Footer -->
+			<footer>
+				<p>&copy; {new Date().getFullYear()} Proverbial Entropy. All rights reserved.</p>
+			</footer>
+		</div>
+	</body>
+</html>
+
+<style is:global>
+	:root {
+		--bg-color: #121212;
+		--surface-color: #1a1a1a;
+		--text-primary: #e6e4df;
+		--text-secondary: #9e9b96;
+		--accent-color: #c5a880;
+		--border-color: #2a2a2a;
+	}
+
+	* {
+		box-sizing: border-box;
+		margin: 0;
+		padding: 0;
+	}
+
+	body {
+		background-color: var(--bg-color);
+		color: var(--text-primary);
+		font-family: 'Plus Jakarta Sans', sans-serif;
+		line-height: 1.7;
+		font-weight: 300;
+		padding: 0 1.5rem;
+	}
+
+	.container {
+		max-width: 720px;
+		margin: 0 auto;
+		padding: 3rem 0 5rem 0;
+	}
+
+	.site-nav {
+		display: flex;
+		gap: 1.5rem;
+		margin-bottom: 3rem;
+		font-size: 0.9rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	.site-nav a {
+		color: var(--text-secondary);
+		text-decoration: none;
+		transition: color 0.2s ease;
+	}
+
+	.site-nav a:hover {
+		color: var(--accent-color);
+	}
+
+	header {
+		text-align: center;
+		margin-bottom: 4rem;
+		border-bottom: 1px solid var(--border-color);
+		padding-bottom: 3rem;
+	}
+
+	.site-title {
+		font-family: 'Cormorant Garamond', serif;
+		font-size: 3rem;
+		font-weight: 600;
+		letter-spacing: 0.05em;
+		color: var(--text-primary);
+		margin-bottom: 0.75rem;
+	}
+
+	.site-tagline {
+		font-size: 1.05rem;
+		color: var(--text-secondary);
+		font-style: italic;
+		font-family: 'Cormorant Garamond', serif;
+		letter-spacing: 0.02em;
+	}
+
+	footer {
+		text-align: center;
+		padding-top: 3rem;
+		margin-top: 4rem;
+		border-top: 1px solid var(--border-color);
+		color: var(--text-secondary);
+		font-size: 0.85rem;
+	}
+
+	@media (max-width: 600px) {
+		.site-title {
+			font-size: 2.3rem;
+		}
+	}
+</style>
