@@ -6,8 +6,7 @@ const blog = defineCollection({
   schema: z.object({
     title: z.string(),
     pubDate: z.coerce.date(),
-    description: z.string().optional(),
-    // Add your new fields here as optional so they don't break things:
+    description: z.string(), // Required so RSS and posts match
     author: z.string().optional(),
     categories: z.string().optional(),
     tags: z.string().optional(),
