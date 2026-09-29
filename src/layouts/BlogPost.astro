@@ -8,7 +8,6 @@ import Header from '../components/Header.astro';
 
 type Props = CollectionEntry<'blog'>['data'];
 
-// Destructure the new fields along with the existing ones
 const { title, description, pubDate, updatedDate, heroImage, author, categories, tags } = Astro.props;
 ---
 
@@ -51,12 +50,17 @@ const { title, description, pubDate, updatedDate, heroImage, author, categories,
 				color: rgb(var(--gray));
 			}
 			.metadata {
-				margin-bottom: 1em;
+				margin: 1em 0;
 				font-size: 0.95rem;
 				color: rgb(var(--gray));
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: center;
+				gap: 0.5em;
 			}
 			.metadata span + span::before {
-				content: " • ";
+				content: "•";
+				margin-right: 0.5em;
 			}
 			.last-updated-on {
 				font-style: italic;
@@ -84,11 +88,10 @@ const { title, description, pubDate, updatedDate, heroImage, author, categories,
 							}
 						</div>
 						<h1>{title}</h1>
-						
-						<!-- NEW METADATA DISPLAY -->
+
 						<div class="metadata">
 							{author && <span class="author">By {author}</span>}
-							{categories && <span class="category">{categories}</span>}
+							{categories && <span class="category">Category: {categories}</span>}
 							{tags && <span class="tags">Tags: {tags}</span>}
 						</div>
 
