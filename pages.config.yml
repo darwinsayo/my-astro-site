@@ -22,7 +22,7 @@ content:
       - name: author
         label: Author
         type: string
-        default: "Darwin Sayo"
+        default: "Anaïs Martín"
       - name: categories
         label: Categories
         type: string
