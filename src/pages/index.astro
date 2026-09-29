@@ -22,77 +22,96 @@ const posts = (await getCollection('blog'))
 
     <style>
       :root {
-        --bg-color: #121212;
-        --surface-color: #1a1a1a;
-        --text-primary: #e6e4df;
-        --text-secondary: #9e9b96;
-        --accent-color: #c5a880;
-        --border-color: #2a2a2a;
+        --bg-color: #0d0d0d;
+        --surface-color: #141414;
+        --surface-hover: #191919;
+        --text-primary: #f0eee9;
+        --text-secondary: #9a968f;
+        --accent-color: #d4b58f;
+        --border-color: #242424;
       }
+
       * { box-sizing: border-box; margin: 0; padding: 0; }
+
       body {
         background-color: var(--bg-color);
         color: var(--text-primary);
         padding: 0 1.5rem;
-        font-family: Plus Jakarta Sans, sans-serif;
+        font-family: 'Plus Jakarta Sans', sans-serif;
         font-weight: 300;
-        line-height: 1.7;
+        line-height: 1.8;
+        -webkit-font-smoothing: antialiased;
       }
-      .container { max-width: 720px; margin: 0 auto; padding: 3rem 0 5rem; }
+
+      .container { max-width: 680px; margin: 0 auto; padding: 4rem 0 6rem; }
+
       .site-nav {
         text-transform: uppercase;
-        letter-spacing: .05em;
-        gap: 1.5rem;
-        margin-bottom: 3rem;
-        font-size: .9rem;
+        letter-spacing: .1em;
+        gap: 2rem;
+        margin-bottom: 4rem;
+        font-size: .8rem;
         display: flex;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 1.5rem;
       }
       .site-nav a { color: var(--text-secondary); text-decoration: none; transition: color .2s; }
       .site-nav a:hover { color: var(--accent-color); }
-      header { text-align: center; border-bottom: 1px solid var(--border-color); margin-bottom: 4rem; padding-bottom: 3rem; }
-      .site-title { letter-spacing: .05em; color: var(--text-primary); margin-bottom: .75rem; font-family: Cormorant Garamond, serif; font-size: 3rem; font-weight: 600; }
-      .site-tagline { color: var(--text-secondary); letter-spacing: .02em; font-family: Cormorant Garamond, serif; font-size: 1.05rem; font-style: italic; }
-      footer { text-align: center; border-top: 1px solid var(--border-color); color: var(--text-secondary); margin-top: 4rem; padding-top: 3rem; font-size: .85rem; }
-      @media (width <= 600px) { .site-title { font-size: 2.3rem; } }
-      
-      .manifesto { color: var(--text-primary); margin-bottom: 4rem; font-size: 1.1rem; }
-      .manifesto p { margin-bottom: 1.5rem; }
-      .manifesto p:first-letter {
+
+      header { text-align: center; border-bottom: 1px solid var(--border-color); margin-bottom: 4rem; padding-bottom: 3.5rem; }
+      .site-title { letter-spacing: .05em; color: var(--text-primary); margin-bottom: .75rem; font-family: 'Cormorant Garamond', serif; font-size: 3.2rem; font-weight: 600; }
+      .site-tagline { color: var(--text-secondary); letter-spacing: .02em; font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-style: italic; }
+
+      /* Manifesto styling with drop-cap elegance */
+      .manifesto { color: #d8d5ce; margin-bottom: 5rem; font-size: 1.1rem; }
+      .manifesto p { margin-bottom: 1.75rem; }
+      .manifesto p:first-of-type::first-letter {
         float: left;
         color: var(--accent-color);
         padding-right: .75rem;
-        font-family: Cormorant Garamond, serif;
-        font-size: 3.5rem;
-        line-height: .8;
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 4rem;
+        line-height: .75;
       }
-      .dispatches { margin-bottom: 4rem; }
-      .section-header-flex { justify-content: space-between; align-items: baseline; margin-bottom: 1.5rem; display: flex; }
-      .section-heading { color: var(--accent-color); text-transform: uppercase; letter-spacing: .1em; font-family: Cormorant Garamond, serif; font-size: 1.5rem; font-weight: 400; }
-      .view-all { color: var(--text-secondary); letter-spacing: .05em; text-transform: uppercase; font-size: .85rem; text-decoration: none; }
+
+      .dispatches { margin-bottom: 5rem; }
+      .section-header-flex { justify-content: space-between; align-items: baseline; margin-bottom: 2rem; display: flex; }
+      .section-heading { color: var(--accent-color); text-transform: uppercase; letter-spacing: .1em; font-family: 'Cormorant Garamond', serif; font-size: 1.4rem; font-weight: 400; }
+      .view-all { color: var(--text-secondary); letter-spacing: .08em; text-transform: uppercase; font-size: .8rem; text-decoration: none; transition: color 0.2s; }
       .view-all:hover { color: var(--accent-color); }
       
       .dispatch-card {
         background-color: var(--surface-color);
         border: 1px solid var(--border-color);
         margin-bottom: 1.5rem;
-        padding: 2rem;
-        transition: border-color .3s;
+        padding: 2.25rem;
+        transition: all .3s ease;
       }
-      .dispatch-card:hover { border-color: var(--accent-color); }
-      .dispatch-date { color: var(--text-secondary); text-transform: uppercase; letter-spacing: .05em; margin-bottom: .5rem; font-size: .85rem; }
-      .dispatch-title { margin-bottom: .75rem; font-family: Cormorant Garamond, serif; font-size: 1.8rem; font-weight: 600; }
+      .dispatch-card:hover { 
+        border-color: var(--accent-color); 
+        background-color: var(--surface-hover);
+        transform: translateY(-2px);
+      }
+      .dispatch-date { color: var(--text-secondary); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .75rem; font-size: .8rem; }
+      .dispatch-title { margin-bottom: .75rem; font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600; }
       .dispatch-title a { color: var(--text-primary); text-decoration: none; }
-      .dispatch-excerpt { color: var(--text-secondary); margin-bottom: 0; font-size: .95rem; }
+      .dispatch-excerpt { color: var(--text-secondary); margin-bottom: 0; font-size: 1rem; line-height: 1.7; }
       
-      .subscribe-box { background-color: var(--surface-color); border: 1px solid var(--border-color); text-align: center; margin-top: 4rem; padding: 2.5rem; }
-      .subscribe-box h3 { margin-bottom: .75rem; font-family: Cormorant Garamond, serif; font-size: 2rem; font-weight: 400; }
-      .subscribe-box p { color: var(--text-secondary); margin-bottom: 1.5rem; font-size: .95rem; }
-      .subscribe-form { gap: .5rem; max-width: 450px; margin: 0 auto; display: flex; }
-      .subscribe-input { background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-primary); outline: none; flex: 1; padding: .75rem 1rem; font-family: inherit; font-size: .9rem; }
+      .subscribe-box { background-color: var(--surface-color); border: 1px solid var(--border-color); text-align: center; margin-top: 5rem; padding: 3rem 2rem; }
+      .subscribe-box h3 { margin-bottom: .75rem; font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 400; }
+      .subscribe-box p { color: var(--text-secondary); margin-bottom: 2rem; font-size: 0.95rem; }
+      .subscribe-form { gap: .5rem; max-width: 440px; margin: 0 auto; display: flex; }
+      .subscribe-input { background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-primary); outline: none; flex: 1; padding: .85rem 1rem; font-family: inherit; font-size: .9rem; }
       .subscribe-input:focus { border-color: var(--accent-color); }
-      .subscribe-btn { background-color: var(--accent-color); color: var(--bg-color); cursor: pointer; border: none; padding: .75rem 1.5rem; font-family: inherit; font-size: .9rem; font-weight: 500; transition: opacity .2s; }
+      .subscribe-btn { background-color: var(--accent-color); color: var(--bg-color); cursor: pointer; border: none; padding: .85rem 1.5rem; font-family: inherit; font-size: .9rem; font-weight: 500; transition: opacity .2s; }
       .subscribe-btn:hover { opacity: .9; }
-      @media (width <= 600px) { .subscribe-form { flex-direction: column; } }
+
+      footer { text-align: center; border-top: 1px solid var(--border-color); color: var(--text-secondary); margin-top: 6rem; padding-top: 3rem; font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; }
+
+      @media (width <= 600px) { 
+        .site-title { font-size: 2.4rem; } 
+        .subscribe-form { flex-direction: column; }
+      }
     </style>
   </head>
   <body>
@@ -126,8 +145,8 @@ const posts = (await getCollection('blog'))
             <article class="dispatch-card">
               <div class="dispatch-date">
                 <time datetime={new Date(post.data.pubDate).toISOString()}>
-  {new Date(post.data.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-</time>
+                  {new Date(post.data.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                </time>
               </div>
               <h3 class="dispatch-title">
                 <a href={`/dispatches/${post.id}`}>{post.data.title}</a>
