@@ -2,8 +2,10 @@
 import { getCollection } from 'astro:content';
 
 const posts = (await getCollection('blog'))
-  .sort((a, b) => new Date(b.data.pubDate).valueOf() - new Date(a.data.pubDate).valueOf())
-  .slice(0, 3);
+  .sort((a, b) => new Date(b.data.pubDate).valueOf() - new Date(b.data.pubDate).valueOf());
+
+const latestPost = posts[0];
+const otherPosts = posts.slice(1, 4);
 ---
 
 <!doctype html>
@@ -22,13 +24,14 @@ const posts = (await getCollection('blog'))
 
     <style>
       :root {
-        --bg-color: #0d0d0d;
-        --surface-color: #141414;
-        --surface-hover: #191919;
-        --text-primary: #f0eee9;
-        --text-secondary: #9a968f;
-        --accent-color: #d4b58f;
-        --border-color: #242424;
+        --bg-color: #0b0b0c;
+        --surface-color: #131316;
+        --surface-hover: #18181c;
+        --text-primary: #f2f0eb;
+        --text-secondary: #949088;
+        --accent-color: #dfbe93;
+        --accent-glow: rgba(223, 190, 147, 0.08);
+        --border-color: #232328;
       }
 
       * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -43,34 +46,68 @@ const posts = (await getCollection('blog'))
         -webkit-font-smoothing: antialiased;
       }
 
-      .container { max-width: 680px; margin: 0 auto; padding: 4rem 0 6rem; }
+      .container { max-width: 720px; margin: 0 auto; padding: 4rem 0 6rem; }
 
       .site-nav {
         text-transform: uppercase;
-        letter-spacing: .1em;
+        letter-spacing: .12em;
         gap: 2rem;
         margin-bottom: 4rem;
-        font-size: .8rem;
+        font-size: .75rem;
         display: flex;
+        justify-content: space-between;
+        align-items: center;
         border-bottom: 1px solid var(--border-color);
         padding-bottom: 1.5rem;
       }
+      .site-nav-links { display: flex; gap: 2rem; }
       .site-nav a { color: var(--text-secondary); text-decoration: none; transition: color .2s; }
       .site-nav a:hover { color: var(--accent-color); }
+      .edition-badge { color: var(--accent-color); font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-style: italic; }
 
-      header { text-align: center; border-bottom: 1px solid var(--border-color); margin-bottom: 4rem; padding-bottom: 3.5rem; }
-      .site-title { letter-spacing: .05em; color: var(--text-primary); margin-bottom: .75rem; font-family: 'Cormorant Garamond', serif; font-size: 3.2rem; font-weight: 600; }
-      .site-tagline { color: var(--text-secondary); letter-spacing: .02em; font-family: 'Cormorant Garamond', serif; font-size: 1.15rem; font-style: italic; }
+      /* Dynamic Hero Header */
+      header { 
+        text-align: left; 
+        border-bottom: 1px solid var(--border-color); 
+        margin-bottom: 4rem; 
+        padding-bottom: 3.5rem;
+        position: relative;
+      }
+      header::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 80px;
+        height: 2px;
+        background-color: var(--accent-color);
+      }
+      .site-title { 
+        letter-spacing: .03em; 
+        color: var(--text-primary); 
+        margin-bottom: .75rem; 
+        font-family: 'Cormorant Garamond', serif; 
+        font-size: 3.8rem; 
+        font-weight: 600; 
+        line-height: 1.1;
+      }
+      .site-tagline { 
+        color: var(--text-secondary); 
+        letter-spacing: .02em; 
+        font-family: 'Cormorant Garamond', serif; 
+        font-size: 1.25rem; 
+        font-style: italic; 
+      }
 
-      /* Manifesto styling with drop-cap elegance */
-      .manifesto { color: #d8d5ce; margin-bottom: 5rem; font-size: 1.1rem; }
+      /* Manifesto styling */
+      .manifesto { color: #d6d3cc; margin-bottom: 5rem; font-size: 1.1rem; }
       .manifesto p { margin-bottom: 1.75rem; }
       .manifesto p:first-of-type::first-letter {
         float: left;
         color: var(--accent-color);
         padding-right: .75rem;
         font-family: 'Cormorant Garamond', serif;
-        font-size: 4rem;
+        font-size: 4.2rem;
         line-height: .75;
       }
 
@@ -80,36 +117,71 @@ const posts = (await getCollection('blog'))
       .view-all { color: var(--text-secondary); letter-spacing: .08em; text-transform: uppercase; font-size: .8rem; text-decoration: none; transition: color 0.2s; }
       .view-all:hover { color: var(--accent-color); }
       
+      /* Featured Hero Dispatch Card */
+      .dispatch-card.featured {
+        background: linear-gradient(135deg, var(--surface-color) 0%, var(--surface-hover) 100%);
+        border: 1px solid var(--accent-color);
+        box-shadow: 0 10px 30px var(--accent-glow);
+        padding: 2.75rem;
+        margin-bottom: 2rem;
+        position: relative;
+      }
+      .dispatch-card.featured::before {
+        content: 'FEATURED DISPATCH';
+        position: absolute;
+        top: -12px;
+        left: 2.5rem;
+        background-color: var(--bg-color);
+        color: var(--accent-color);
+        padding: 0 0.75rem;
+        font-size: 0.65rem;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+      }
+      .dispatch-card.featured .dispatch-title { font-size: 2.4rem; }
+
+      /* Standard Dispatch Card */
       .dispatch-card {
         background-color: var(--surface-color);
         border: 1px solid var(--border-color);
         margin-bottom: 1.5rem;
         padding: 2.25rem;
-        transition: all .3s ease;
+        transition: all .3s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .dispatch-card:hover { 
         border-color: var(--accent-color); 
         background-color: var(--surface-hover);
-        transform: translateY(-2px);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.4);
       }
-      .dispatch-date { color: var(--text-secondary); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .75rem; font-size: .8rem; }
-      .dispatch-title { margin-bottom: .75rem; font-family: 'Cormorant Garamond', serif; font-size: 2rem; font-weight: 600; }
-      .dispatch-title a { color: var(--text-primary); text-decoration: none; }
-      .dispatch-excerpt { color: var(--text-secondary); margin-bottom: 0; font-size: 1rem; line-height: 1.7; }
       
-      .subscribe-box { background-color: var(--surface-color); border: 1px solid var(--border-color); text-align: center; margin-top: 5rem; padding: 3rem 2rem; }
-      .subscribe-box h3 { margin-bottom: .75rem; font-family: 'Cormorant Garamond', serif; font-size: 2.2rem; font-weight: 400; }
+      .dispatch-date { color: var(--text-secondary); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .75rem; font-size: .75rem; }
+      .dispatch-title { margin-bottom: .75rem; font-family: 'Cormorant Garamond', serif; font-size: 1.8rem; font-weight: 600; line-height: 1.2; }
+      .dispatch-title a { color: var(--text-primary); text-decoration: none; }
+      .dispatch-excerpt { color: var(--text-secondary); margin-bottom: 0; font-size: 0.95rem; line-height: 1.7; }
+      
+      /* Newsletter Box */
+      .subscribe-box { 
+        background-color: var(--surface-color); 
+        border: 1px solid var(--border-color); 
+        text-align: center; 
+        margin-top: 5rem; 
+        padding: 3.5rem 2rem;
+        position: relative;
+      }
+      .subscribe-box h3 { margin-bottom: .75rem; font-family: 'Cormorant Garamond', serif; font-size: 2.4rem; font-weight: 400; }
       .subscribe-box p { color: var(--text-secondary); margin-bottom: 2rem; font-size: 0.95rem; }
       .subscribe-form { gap: .5rem; max-width: 440px; margin: 0 auto; display: flex; }
-      .subscribe-input { background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-primary); outline: none; flex: 1; padding: .85rem 1rem; font-family: inherit; font-size: .9rem; }
+      .subscribe-input { background-color: var(--bg-color); border: 1px solid var(--border-color); color: var(--text-primary); outline: none; flex: 1; padding: .9rem 1rem; font-family: inherit; font-size: .9rem; }
       .subscribe-input:focus { border-color: var(--accent-color); }
-      .subscribe-btn { background-color: var(--accent-color); color: var(--bg-color); cursor: pointer; border: none; padding: .85rem 1.5rem; font-family: inherit; font-size: .9rem; font-weight: 500; transition: opacity .2s; }
+      .subscribe-btn { background-color: var(--accent-color); color: var(--bg-color); cursor: pointer; border: none; padding: .9rem 1.6rem; font-family: inherit; font-size: .9rem; font-weight: 500; transition: opacity .2s; }
       .subscribe-btn:hover { opacity: .9; }
 
-      footer { text-align: center; border-top: 1px solid var(--border-color); color: var(--text-secondary); margin-top: 6rem; padding-top: 3rem; font-size: .8rem; letter-spacing: .08em; text-transform: uppercase; }
+      footer { text-align: center; border-top: 1px solid var(--border-color); color: var(--text-secondary); margin-top: 6rem; padding-top: 3rem; font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; }
 
       @media (width <= 600px) { 
-        .site-title { font-size: 2.4rem; } 
+        .site-title { font-size: 2.8rem; } 
+        .dispatch-card.featured .dispatch-title { font-size: 2rem; }
         .subscribe-form { flex-direction: column; }
       }
     </style>
@@ -118,8 +190,11 @@ const posts = (await getCollection('blog'))
     <div class="container">
       <!-- Global Navigation -->
       <nav class="site-nav">
-        <a href="/">Home</a>
-        <a href="/dispatches">All Dispatches</a>
+        <span class="edition-badge">Vol. I</span>
+        <div class="site-nav-links">
+          <a href="/">Home</a>
+          <a href="/dispatches">All Dispatches</a>
+        </div>
       </nav>
 
       <header>
@@ -135,27 +210,47 @@ const posts = (await getCollection('blog'))
       <section class="dispatches">
         <div class="section-header-flex">
           <h2 class="section-heading">Recent Dispatches</h2>
-          <a href="/dispatches" class="view-all">View all &rarr;</a>
+          <a href="/dispatches" class="view-all">View all archive &rarr;</a>
         </div>
 
         {posts.length === 0 ? (
           <p style="color: var(--text-secondary);">No dispatches yet.</p>
         ) : (
-          posts.map((post) => (
-            <article class="dispatch-card">
-              <div class="dispatch-date">
-                <time datetime={new Date(post.data.pubDate).toISOString()}>
-                  {new Date(post.data.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                </time>
-              </div>
-              <h3 class="dispatch-title">
-                <a href={`/dispatches/${post.id}`}>{post.data.title}</a>
-              </h3>
-              {post.data.description && (
-                <p class="dispatch-excerpt">{post.data.description}</p>
-              )}
-            </article>
-          ))
+          <>
+            {/* Featured Hero Card for Latest Post */}
+            {latestPost && (
+              <article class="dispatch-card featured">
+                <div class="dispatch-date">
+                  <time datetime={new Date(latestPost.data.pubDate).toISOString()}>
+                    {new Date(latestPost.data.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  </time>
+                </div>
+                <h3 class="dispatch-title">
+                  <a href={`/dispatches/${latestPost.id}`}>{latestPost.data.title}</a>
+                </h3>
+                {latestPost.data.description && (
+                  <p class="dispatch-excerpt">{latestPost.data.description}</p>
+                )}
+              </article>
+            )}
+
+            {/* Remaining Posts */}
+            {otherPosts.map((post) => (
+              <article class="dispatch-card">
+                <div class="dispatch-date">
+                  <time datetime={new Date(post.data.pubDate).toISOString()}>
+                    {new Date(post.data.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  </time>
+                </div>
+                <h3 class="dispatch-title">
+                  <a href={`/dispatches/${post.id}`}>{post.data.title}</a>
+                </h3>
+                {post.data.description && (
+                  <p class="dispatch-excerpt">{post.data.description}</p>
+                )}
+              </article>
+            ))}
+          </>
         )}
       </section>
 
