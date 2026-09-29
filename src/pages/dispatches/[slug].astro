@@ -24,6 +24,22 @@ const { Content } = await render(post); // <-- Must use render(post) here
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
     
     <style>
+    .dispatch-meta {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.dispatch-meta span {
+  display: inline-block;
+}
+
+.dispatch-meta .author {
+  color: var(--accent-color);
+}
       :root {
         --bg-color: #121212;
         --surface-color: #1a1a1a;
@@ -83,10 +99,17 @@ const { Content } = await render(post); // <-- Must use render(post) here
         <article>
           <h1>{post.data.title}</h1>
           <div class="dispatch-date">
-            <time datetime={new Date(post.data.pubDate).toISOString()}>
-              {new Date(post.data.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-            </time>
-          </div>
+  <time datetime={new Date(post.data.pubDate).toISOString()}>
+    {new Date(post.data.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+  </time>
+
+  <!-- ADD YOUR METADATA HERE -->
+  <div class="dispatch-meta">
+    {post.data.author && <span class="author">By {post.data.author}</span>}
+    {post.data.categories && <span class="category">Category: {post.data.categories}</span>}
+    {post.data.tags && <span class="tags">Tags: {post.data.tags}</span>}
+  </div>
+</div>
 
           <div class="prose">
             <Content />
