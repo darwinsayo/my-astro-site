@@ -1,5 +1,5 @@
 ---
-import { getCollection, render } from 'astro:content'; // <-- Import render here
+import { getCollection } from 'astro:content';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
@@ -10,7 +10,7 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { Content } = await render(post); // <-- Use render(post) instead of post.render()
+const { Content } = await post.render();
 ---
 
 <!doctype html>
@@ -82,15 +82,12 @@ const { Content } = await render(post); // <-- Use render(post) instead of post.
       <main>
         <article>
           <h1>{post.data.title}</h1>
-          <<div class="dispatch-date">
-  {post.data.pubDate && !isNaN(new Date(post.data.pubDate).getTime()) ? (
-    <time datetime={new Date(post.data.pubDate).toISOString()}>
-      {new Date(post.data.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-    </time>
-  ) : (
-    <time>{String(post.data.pubDate || 'No Date Provided')}</time>
-  )}
-</div>
+          <div class="dispatch-date">
+            <time datetime={new Date(post.data.pubDate).toISOString()}>
+              {new Date(post.data.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            </time>
+          </div>
+
           <div class="prose">
             <Content />
           </div>
@@ -102,4 +99,4 @@ const { Content } = await render(post); // <-- Use render(post) instead of post.
       </footer>
     </div>
   </body>
-</html> 
+</html>
