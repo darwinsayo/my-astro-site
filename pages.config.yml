@@ -19,6 +19,23 @@ content:
       - name: description
         label: Description
         type: string
+      - name: author
+        label: Author
+        type: string
+        default: "Darwin Sayo"
+      - name: categories
+        label: Categories
+        type: string
+      - name: tags
+        label: Tags
+        type: string
+      - name: image
+        label: Featured Image
+        type: image
+      - name: draft
+        label: Draft
+        type: boolean
+        default: false
       - name: body
         label: Body
         type: rich-text
