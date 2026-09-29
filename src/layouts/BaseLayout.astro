@@ -1,12 +1,12 @@
 ---
 interface Props {
-  title?: string;
-  description?: string;
+	title?: string;
+	description?: string;
 }
 
 const { 
-  title = "Proverbial Entropy", 
-  description = "Internal musings on modern chaos and the preservation of the soul." 
+	title = "Proverbial Entropy", 
+	description = "Internal musings on modern chaos and the preservation of the soul." 
 } = Astro.props;
 ---
 
@@ -32,7 +32,6 @@ const {
 				<a href="/dispatches">All Dispatches</a>
 			</nav>
 
-            {/* This is where individual page content gets injected */}
             <slot />
 
 			<!-- Global Footer -->
@@ -45,12 +44,12 @@ const {
 
 <style is:global>
 	:root {
-		--bg-color: #121212;
-		--surface-color: #1a1a1a;
-		--text-primary: #e6e4df;
-		--text-secondary: #9e9b96;
-		--accent-color: #c5a880;
-		--border-color: #2a2a2a;
+		--bg-color: #0d0d0d;
+		--surface-color: #161616;
+		--text-primary: #f0eee9;
+		--text-secondary: #9a968f;
+		--accent-color: #d4b58f;
+		--border-color: #262626;
 	}
 
 	* {
@@ -63,24 +62,27 @@ const {
 		background-color: var(--bg-color);
 		color: var(--text-primary);
 		font-family: 'Plus Jakarta Sans', sans-serif;
-		line-height: 1.7;
+		line-height: 1.8;
 		font-weight: 300;
 		padding: 0 1.5rem;
+		-webkit-font-smoothing: antialiased;
 	}
 
 	.container {
-		max-width: 720px;
+		max-width: 680px;
 		margin: 0 auto;
-		padding: 3rem 0 5rem 0;
+		padding: 4rem 0 6rem 0;
 	}
 
 	.site-nav {
 		display: flex;
 		gap: 1.5rem;
-		margin-bottom: 3rem;
-		font-size: 0.9rem;
+		margin-bottom: 5rem;
+		font-size: 0.8rem;
 		text-transform: uppercase;
-		letter-spacing: 0.05em;
+		letter-spacing: 0.1em;
+		border-bottom: 1px solid var(--border-color);
+		padding-bottom: 1.5rem;
 	}
 
 	.site-nav a {
@@ -117,13 +119,21 @@ const {
 		letter-spacing: 0.02em;
 	}
 
+	p {
+		margin-bottom: 1.75rem;
+		font-size: 1.05rem;
+		color: #d8d5ce;
+	}
+
 	footer {
 		text-align: center;
 		padding-top: 3rem;
-		margin-top: 4rem;
+		margin-top: 6rem;
 		border-top: 1px solid var(--border-color);
 		color: var(--text-secondary);
-		font-size: 0.85rem;
+		font-size: 0.8rem;
+		letter-spacing: 0.05em;
+		text-transform: uppercase;
 	}
 
 	@media (max-width: 600px) {
