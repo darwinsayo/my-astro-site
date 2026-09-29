@@ -7,6 +7,12 @@ const blog = defineCollection({
     title: z.string(),
     pubDate: z.coerce.date(),
     description: z.string().optional(),
+    // Add your new fields here as optional so they don't break things:
+    author: z.string().optional(),
+    categories: z.string().optional(),
+    tags: z.string().optional(),
+    image: z.string().optional(),
+    draft: z.boolean().optional(),
   }),
 });
 
