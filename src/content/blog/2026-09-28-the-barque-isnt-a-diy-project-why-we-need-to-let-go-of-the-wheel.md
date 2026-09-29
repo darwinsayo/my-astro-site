@@ -1,5 +1,4 @@
 ---
----
 title: "The Barque Isn’t a DIY Project: Why We Need to Let Go of the Wheel"
 pubDate: 2026-09-28
 description: "Why we need to let go of the wheel and trust the shepherds of the Church."
@@ -7,7 +6,6 @@ author: Basil Blackwood
 categories: Catholic Living & Spirituality
 tags: Catholic Church, Church Authority, Modern Culture
 draft: false
----
 ---
 We live in a culture obsessed with custom playlists and bespoke everything. It's easy to see how that mindset bleeds into the pews, turning the faith into an à la carte buffet where people pick and choose what they want to believe.
 
