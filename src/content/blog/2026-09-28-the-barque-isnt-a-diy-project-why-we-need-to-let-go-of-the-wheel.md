@@ -1,6 +1,6 @@
 ---
 title: "The Barque Isn’t a DIY Project: Why We Need to Let Go of the Wheel"
-pubDate: 2026-09-28
+pubDate: "2026-09-28"
 author: Basil Blackwood
 categories: Catholic Living & Spirituality
 tags: Catholic Church, Church Authority, Modern Culture
