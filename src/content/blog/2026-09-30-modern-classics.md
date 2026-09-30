@@ -4,6 +4,7 @@ pubDate: 2026-09-30
 description: Understanding the modern classics
 author: Anaïs Martín
 categories: Academic Musings
+tags: "Modern Classic Lit. Literature. Politics. "
 draft: false
 ---
 Reading modern classics can help us to better understand the world and human experiences, by offering commentaries about them, whether wonderous or controversial.
