@@ -1,0 +1,3 @@
+/blog          /dispatches          301
+/blog/*        /dispatches/:splat   301
+/about         /                    302

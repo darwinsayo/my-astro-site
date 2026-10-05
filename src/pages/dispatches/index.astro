@@ -1,69 +1,68 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import DispatchCard from '../../components/DispatchCard.astro';
+import { getPosts } from '../../lib/posts';
 
-const allPosts = await getCollection('blog');
-const posts = allPosts.sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime());
+const posts = await getPosts();
+
+// Group by year, newest first
+const years = new Map<number, typeof posts>();
+for (const post of posts) {
+	const y = post.data.pubDate.getUTCFullYear();
+	years.set(y, [...(years.get(y) ?? []), post]);
+}
 ---
 
-<BaseLayout title="All Dispatches | Proverbial Entropy">
-    <header class="archive-header">
-        <h1 class="site-title">All Dispatches</h1>
-        <p class="site-tagline">An archive of thoughts on societal decay and the soul.</p>
-    </header>
+<BaseLayout title="All Dispatches" description="An archive of thoughts on societal decay and the soul.">
+	<header class="archive-header">
+		<p class="kicker">The archive · {posts.length} {posts.length === 1 ? 'dispatch' : 'dispatches'}</p>
+		<h1 class="page-title">All Dispatches</h1>
+		<p class="page-tagline">An archive of thoughts on societal decay and the soul.</p>
+	</header>
 
-    <section class="dispatches-list">
-        {posts.map((post) => (
-            <article class="dispatch-card">
-                <div class="dispatch-date">
-                    {new Date(post.data.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                </div>
-                <h2 class="dispatch-title">
-                    <a href={`/dispatches/${post.id}`}>{post.data.title}</a>
-                </h2>
-                <p class="dispatch-excerpt">{post.data.description}</p>
-            </article>
-        ))}
-    </section>
+	{posts.length === 0 && <p class="empty">Nothing here yet. Check back soon.</p>}
+
+	{
+		[...years].map(([year, list]) => (
+			<section class="year" aria-labelledby={`y${year}`}>
+				<h2 class="year-label" id={`y${year}`}>{year}</h2>
+				{list.map((post) => <DispatchCard post={post} headingLevel="h3" />)}
+			</section>
+		))
+	}
 </BaseLayout>
 
 <style>
-    .archive-header {
-        text-align: center;
-        margin-bottom: 4rem;
-        border-bottom: 1px solid var(--border-color);
-        padding-bottom: 3rem;
-    }
-    .dispatch-card {
-        background-color: var(--surface-color);
-        border: 1px solid var(--border-color);
-        padding: 2rem;
-        margin-bottom: 1.5rem;
-        transition: border-color 0.3s ease;
-    }
-    .dispatch-card:hover {
-        border-color: var(--accent-color);
-    }
-    .dispatch-date {
-        font-size: 0.85rem;
-        color: var(--text-secondary);
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 0.5rem;
-    }
-    .dispatch-title {
-        font-family: 'Cormorant Garamond', serif;
-        font-size: 1.8rem;
-        margin-bottom: 0.75rem;
-        font-weight: 600;
-    }
-    .dispatch-title a {
-        color: var(--text-primary);
-        text-decoration: none;
-    }
-    .dispatch-excerpt {
-        color: var(--text-secondary);
-        font-size: 0.95rem;
-        margin-bottom: 0;
-    }
+	.archive-header {
+		margin-bottom: 3.5rem;
+		padding-bottom: 3rem;
+		border-bottom: 1px solid var(--border);
+	}
+	.archive-header .page-title {
+		margin-top: 0.75rem;
+	}
+	.year + .year {
+		margin-top: 3.5rem;
+	}
+	.year-label {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		font-family: var(--serif);
+		font-style: italic;
+		font-weight: 400;
+		font-size: 1.4rem;
+		color: var(--accent);
+		margin-bottom: 1.5rem;
+	}
+	.year-label::after {
+		content: '';
+		flex: 1;
+		height: 1px;
+		background: var(--border);
+	}
+	.empty {
+		color: var(--text-muted);
+		font-style: italic;
+	}
 </style>

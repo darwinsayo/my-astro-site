@@ -1,125 +1,284 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Entropy from '../../components/Entropy.astro';
+import { excerpt, formatDate, getPosts, readingTime, splitList, type Post } from '../../lib/posts';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
-  return posts.map((post) => ({
-    params: { slug: post.id },
-    props: { post },
-  }));
+	const posts = await getPosts();
+	return posts.map((post, i) => ({
+		params: { slug: post.id },
+		props: { post, newer: posts[i - 1], older: posts[i + 1] },
+	}));
 }
 
-const { post } = Astro.props;
-const { Content } = await render(post); // <-- Must use render(post) here
+interface Props {
+	post: Post;
+	newer?: Post;
+	older?: Post;
+}
+
+const { post, newer, older } = Astro.props;
+const { Content } = await render(post);
+const { title, pubDate, author, categories, tags, image, description } = post.data;
+
+const category = splitList(categories)[0];
+const tagList = splitList(tags);
+const desc = (description ?? '').trim();
+const deck = desc.length >= 60 && !title.toLowerCase().includes(desc.toLowerCase()) ? desc : undefined;
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{post.data.title} — Proverbial Entropy</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
-    
-    <style>
-    .dispatch-meta {
-  margin-top: 0.5rem;
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
+<BaseLayout title={title} description={excerpt(post, 30)} image={image} type="article">
+	<article class="dispatch">
+		<header class="dispatch-header">
+			<p class="kicker">
+				<a href="/dispatches" class="crumb">Dispatches</a>
+				{category && <> <span aria-hidden="true">/</span> <span class="accent">{category}</span></>}
+			</p>
+			<h1 class="page-title">{title}</h1>
+			{deck && <p class="page-tagline">{deck}</p>}
 
-.dispatch-meta span {
-  display: inline-block;
-}
+			<div class="byline">
+				{author && <span class="author">By {author}</span>}
+				<time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+				<span>{readingTime(post)}</span>
+			</div>
+		</header>
 
-.dispatch-meta .author {
-  color: var(--accent-color);
-}
-      :root {
-        --bg-color: #121212;
-        --surface-color: #1a1a1a;
-        --text-primary: #e6e4df;
-        --text-secondary: #9e9b96;
-        --accent-color: #c5a880;
-        --border-color: #2a2a2a;
-      }
-      * { box-sizing: border-box; margin: 0; padding: 0; }
-      body {
-        background-color: var(--bg-color);
-        color: var(--text-primary);
-        padding: 0 1.5rem;
-        font-family: Plus Jakarta Sans, sans-serif;
-        font-weight: 300;
-        line-height: 1.7;
-      }
-      .container { max-width: 720px; margin: 0 auto; padding: 3rem 0 5rem; }
-      .site-nav {
-        text-transform: uppercase;
-        letter-spacing: .05em;
-        gap: 1.5rem;
-        margin-bottom: 3rem;
-        font-size: .9rem;
-        display: flex;
-      }
-      .site-nav a { color: var(--text-secondary); text-decoration: none; transition: color .2s; }
-      .site-nav a:hover { color: var(--accent-color); }
-      article { margin-top: 2rem; }
-      article h1 {
-        font-family: Cormorant Garamond, serif;
-        font-size: 2.5rem;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        color: var(--text-primary);
-      }
-      .dispatch-date {
-        color: var(--text-secondary);
-        text-transform: uppercase;
-        letter-spacing: .05em;
-        margin-bottom: 2rem;
-        font-size: .85rem;
-      }
-      .prose { color: var(--text-primary); font-size: 1.05rem; }
-      .prose p { margin-bottom: 1.5rem; }
-      footer { text-align: center; border-top: 1px solid var(--border-color); color: var(--text-secondary); margin-top: 4rem; padding-top: 3rem; font-size: .85rem; }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <nav class="site-nav">
-        <a href="/">&larr; Home</a>
-        <a href="/dispatches">All Dispatches</a>
-      </nav>
+		{image && <img class="dispatch-image" src={image} alt="" />}
 
-      <main>
-        <article>
-          <h1>{post.data.title}</h1>
-          <div class="dispatch-date">
-  <time datetime={new Date(post.data.pubDate).toISOString()}>
-    {new Date(post.data.pubDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-  </time>
+		<div class="prose">
+			<Content />
+		</div>
 
-  <!-- ADD YOUR METADATA HERE -->
-  <div class="dispatch-meta">
-    {post.data.author && <span class="author">By {post.data.author}</span>}
-    {post.data.categories && <span class="category">Category: {post.data.categories}</span>}
-    {post.data.tags && <span class="tags">Tags: {post.data.tags}</span>}
-  </div>
-</div>
+		<Entropy class="end-mark" width={200} count={24} seed={pubDate.getUTCDate()} />
 
-          <div class="prose">
-            <Content />
-          </div>
-        </article>
-      </main>
+		{
+			tagList.length > 0 && (
+				<ul class="tags" aria-label="Tags">
+					{tagList.map((t) => (
+						<li>{t}</li>
+					))}
+				</ul>
+			)
+		}
+	</article>
 
-      <footer>
-        <p>&copy; 2026 Proverbial Entropy. All rights reserved.</p>
-      </footer>
-    </div>
-  </body>
-</html>
+	<nav class="pager" aria-label="More dispatches">
+		{
+			older ? (
+				<a href={`/dispatches/${older.id}`} class="pager-link">
+					<span class="kicker">&larr; Older</span>
+					<span class="pager-title">{older.data.title}</span>
+				</a>
+			) : (
+				<span />
+			)
+		}
+		{
+			newer ? (
+				<a href={`/dispatches/${newer.id}`} class="pager-link pager-link--next">
+					<span class="kicker">Newer &rarr;</span>
+					<span class="pager-title">{newer.data.title}</span>
+				</a>
+			) : (
+				<a href="/dispatches" class="pager-link pager-link--next">
+					<span class="kicker">The archive &rarr;</span>
+					<span class="pager-title">All dispatches</span>
+				</a>
+			)
+		}
+	</nav>
+</BaseLayout>
+
+<style>
+	.dispatch-header {
+		margin-bottom: 3rem;
+	}
+	.crumb {
+		text-decoration: none;
+		transition: color 0.2s;
+	}
+	.crumb:hover {
+		color: var(--accent);
+	}
+	.dispatch-header .page-title {
+		margin-top: 1rem;
+		font-size: clamp(2.3rem, 7vw, 3.4rem);
+	}
+	.byline {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.4rem 1.25rem;
+		margin-top: 1.75rem;
+		padding-top: 1.25rem;
+		border-top: 1px solid var(--border);
+		font-size: 0.72rem;
+		text-transform: uppercase;
+		letter-spacing: 0.14em;
+		color: var(--text-muted);
+	}
+	.author {
+		color: var(--accent);
+	}
+
+	.dispatch-image {
+		width: 100%;
+		max-height: 520px;
+		object-fit: cover;
+		margin-bottom: 3rem;
+		border: 1px solid var(--border);
+	}
+
+	.dispatch :global(.end-mark) {
+		margin: 3.5rem 0 2rem;
+	}
+
+	.tags {
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+	.tags li {
+		font-size: 0.68rem;
+		text-transform: uppercase;
+		letter-spacing: 0.14em;
+		color: var(--text-muted);
+		border: 1px solid var(--border);
+		padding: 0.3rem 0.75rem;
+	}
+
+	/* ---------- Older / newer ---------- */
+	.pager {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1rem;
+		margin-top: 4.5rem;
+	}
+	.pager-link {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		padding: 1.4rem 1.5rem;
+		border: 1px solid var(--border);
+		background: var(--surface);
+		text-decoration: none;
+		transition: border-color 0.3s;
+	}
+	.pager-link:hover {
+		border-color: var(--accent);
+	}
+	.pager-link--next {
+		text-align: right;
+		grid-column: 2;
+	}
+	.pager-title {
+		font-family: var(--serif);
+		font-size: 1.25rem;
+		font-weight: 600;
+		line-height: 1.25;
+		color: var(--text);
+	}
+
+	@media (max-width: 560px) {
+		.prose {
+			font-size: 1.04rem;
+		}
+		.pager {
+			grid-template-columns: 1fr;
+		}
+		.pager-link--next {
+			grid-column: 1;
+		}
+	}
+</style>
+
+<style is:global>
+	/* ---------- The reading column ---------- */
+	.prose {
+		font-size: 1.08rem;
+		font-weight: 400;
+		line-height: 1.85;
+		color: var(--text-body);
+		hyphens: auto;
+	}
+	.prose > * + * {
+		margin-top: 1.5em;
+	}
+	.prose > p:first-of-type::first-letter {
+		float: left;
+		font-family: var(--serif);
+		font-size: 4.4em;
+		line-height: 0.8;
+		padding: 0.08em 0.12em 0 0;
+		color: var(--accent);
+	}
+	.prose h2,
+	.prose h3 {
+		font-family: var(--serif);
+		font-weight: 600;
+		color: var(--text);
+		line-height: 1.25;
+		margin-top: 2.2em;
+	}
+	.prose h2 {
+		font-size: 1.9rem;
+	}
+	.prose h3 {
+		font-size: 1.5rem;
+	}
+	.prose a {
+		color: var(--accent);
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 3px;
+	}
+	.prose strong {
+		font-weight: 500;
+		color: var(--text);
+	}
+	.prose em {
+		font-style: italic;
+	}
+	.prose blockquote {
+		margin: 2.25em 0;
+		padding: 0.25em 0 0.25em 1.5em;
+		border-left: 2px solid var(--accent);
+		font-family: var(--serif);
+		font-style: italic;
+		font-size: 1.35em;
+		line-height: 1.5;
+		color: var(--text);
+	}
+	.prose ul,
+	.prose ol {
+		padding-left: 1.4em;
+	}
+	.prose li + li {
+		margin-top: 0.5em;
+	}
+	.prose li::marker {
+		color: var(--accent);
+	}
+	.prose hr {
+		border: 0;
+		text-align: center;
+		margin: 3em 0;
+	}
+	.prose hr::after {
+		content: '· · ·';
+		color: var(--accent);
+		letter-spacing: 0.6em;
+	}
+	.prose img {
+		margin: 2.5em auto;
+		border: 1px solid var(--border);
+	}
+	.prose code {
+		font-size: 0.9em;
+		background: var(--surface);
+		padding: 0.1em 0.35em;
+	}
+
+</style>

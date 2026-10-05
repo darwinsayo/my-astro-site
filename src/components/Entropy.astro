@@ -1,0 +1,56 @@
+---
+/**
+ * The site's signature ornament: a row of dots that starts in perfect order
+ * and drifts apart as it goes, the way things do when left to themselves.
+ * Deterministic, so it renders the same every build.
+ */
+interface Props {
+	count?: number;
+	width?: number;
+	seed?: number;
+	align?: 'left' | 'center';
+	class?: string;
+}
+
+const { count = 26, width = 220, seed = 7, align = 'left', class: className } = Astro.props;
+const height = 28;
+const mid = height / 2;
+const rand = (i: number) => {
+	const x = Math.sin((i + 1) * 12.9898 + seed * 78.233) * 43758.5453;
+	return x - Math.floor(x);
+};
+const step = (width - 8) / (count - 1);
+const dots = Array.from({ length: count }, (_, i) => {
+	const t = i / (count - 1);
+	const chaos = Math.pow(t, 2.2);
+	return {
+		cx: 4 + i * step + (rand(i) - 0.5) * step * 1.6 * chaos,
+		cy: mid + (rand(i + 50) - 0.5) * (height - 6) * chaos,
+		r: 2 - chaos * (0.4 + rand(i + 99) * 0.9),
+		o: 1 - chaos * 0.65,
+	};
+});
+---
+
+<svg
+	class:list={['entropy', `entropy--${align}`, className]}
+	viewBox={`0 0 ${width} ${height}`}
+	width={width}
+	height={height}
+	aria-hidden="true"
+	focusable="false"
+>
+	{dots.map((d) => <circle cx={d.cx.toFixed(2)} cy={d.cy.toFixed(2)} r={d.r.toFixed(2)} opacity={d.o.toFixed(2)} />)}
+</svg>
+
+<style>
+	.entropy {
+		display: block;
+		fill: var(--accent);
+		max-width: 100%;
+		height: auto;
+	}
+	.entropy--center {
+		margin-inline: auto;
+	}
+</style>

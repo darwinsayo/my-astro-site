@@ -1,42 +1,85 @@
 ---
+import Entropy from '../components/Entropy.astro';
+
 interface Props {
 	title?: string;
 	description?: string;
+	image?: string;
+	type?: 'website' | 'article';
 }
 
-const { 
-	title = "Proverbial Entropy", 
-	description = "Internal musings on modern chaos and the preservation of the soul." 
+const SITE = 'Proverbial Entropy';
+const {
+	title,
+	description = 'Internal musings on modern chaos and the preservation of the soul.',
+	image,
+	type = 'website',
 } = Astro.props;
+
+const pageTitle = title ? `${title} · ${SITE}` : SITE;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = image ? new URL(image, Astro.site).href : undefined;
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+const year = new Date().getFullYear();
 ---
 
+<!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
+		<title>{pageTitle}</title>
 		<meta name="description" content={description} />
-		
-		<!-- Google Fonts -->
-		<link rel="preconnect" href="https://fonts.googleapis.com">
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+		<link rel="canonical" href={canonical} />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="alternate" type="application/rss+xml" title={SITE} href="/rss.xml" />
+		<meta name="theme-color" content="#0b0b0c" />
+
+		<meta property="og:site_name" content={SITE} />
+		<meta property="og:type" content={type} />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:title" content={title ?? SITE} />
+		<meta property="og:description" content={description} />
+		{ogImage && <meta property="og:image" content={ogImage} />}
+		<meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Plus+Jakarta+Sans:wght@300;400;500&display=swap"
+			rel="stylesheet"
+		/>
 	</head>
 	<body>
+		<a class="skip-link" href="#main">Skip to content</a>
 		<div class="container">
-			<!-- Global Navigation -->
-			<nav class="site-nav">
-				<a href="/">Home</a>
-				<a href="/dispatches">All Dispatches</a>
+			<nav class="site-nav" aria-label="Main">
+				<a href="/" class="brand" aria-label="Proverbial Entropy, home">
+					<span class="brand-name">Proverbial Entropy</span>
+					<span class="brand-vol">Vol. I</span>
+				</a>
+				<div class="site-nav-links">
+					<a href="/" aria-current={isActive('/') ? 'page' : undefined}>Home</a>
+					<a href="/dispatches" aria-current={isActive('/dispatches') ? 'page' : undefined}>Dispatches</a>
+				</div>
 			</nav>
 
-            <slot />
+			<main id="main">
+				<slot />
+			</main>
 
-			<!-- Global Footer -->
-			<footer>
-				<p>&copy; {new Date().getFullYear()} Proverbial Entropy. All rights reserved.</p>
+			<footer class="site-footer">
+				<Entropy align="center" width={180} count={22} seed={3} />
+				<p class="footer-motto">Small, stubborn pockets of order.</p>
+				<p class="footer-meta">
+					<span>&copy; {year} Proverbial Entropy</span>
+					<span aria-hidden="true">·</span>
+					<a href="/rss.xml">RSS</a>
+					<span aria-hidden="true">·</span>
+					<a href="#main">Back to top &uarr;</a>
+				</p>
 			</footer>
 		</div>
 	</body>
@@ -44,101 +87,242 @@ const {
 
 <style is:global>
 	:root {
-		--bg-color: #0d0d0d;
-		--surface-color: #161616;
-		--text-primary: #f0eee9;
-		--text-secondary: #9a968f;
-		--accent-color: #d4b58f;
-		--border-color: #262626;
+		--bg: #0b0b0c;
+		--surface: #131316;
+		--surface-hover: #18181c;
+		--text: #f2f0eb;
+		--text-body: #d6d3cc;
+		--text-muted: #9a968e;
+		--accent: #dfbe93;
+		--accent-soft: rgba(223, 190, 147, 0.1);
+		--border: #232328;
+
+		--serif: 'Cormorant Garamond', 'Iowan Old Style', Georgia, serif;
+		--sans: 'Plus Jakarta Sans', system-ui, sans-serif;
+
+		color-scheme: dark;
 	}
 
-	* {
+	*,
+	*::before,
+	*::after {
 		box-sizing: border-box;
 		margin: 0;
 		padding: 0;
 	}
 
+	html {
+		scroll-behavior: smooth;
+	}
+
 	body {
-		background-color: var(--bg-color);
-		color: var(--text-primary);
-		font-family: 'Plus Jakarta Sans', sans-serif;
-		line-height: 1.8;
+		background-color: var(--bg);
+		/* a faint film grain so the black isn't flat */
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .035 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+		color: var(--text);
+		font-family: var(--sans);
 		font-weight: 300;
-		padding: 0 1.5rem;
+		line-height: 1.8;
+		padding: 0 1.25rem;
 		-webkit-font-smoothing: antialiased;
+		text-rendering: optimizeLegibility;
+	}
+
+	::selection {
+		background: var(--accent);
+		color: var(--bg);
+	}
+
+	a {
+		color: inherit;
+	}
+
+	:focus-visible {
+		outline: 1px solid var(--accent);
+		outline-offset: 4px;
+	}
+
+	img {
+		max-width: 100%;
+		height: auto;
+		display: block;
 	}
 
 	.container {
-		max-width: 680px;
+		max-width: 720px;
 		margin: 0 auto;
-		padding: 4rem 0 6rem 0;
+		padding: 2.5rem 0 4rem;
 	}
 
+	.skip-link {
+		position: absolute;
+		left: -999px;
+		top: 1rem;
+		background: var(--accent);
+		color: var(--bg);
+		padding: 0.5rem 1rem;
+		z-index: 10;
+	}
+	.skip-link:focus {
+		left: 1rem;
+	}
+
+	/* ---------- Navigation ---------- */
 	.site-nav {
 		display: flex;
+		justify-content: space-between;
+		align-items: baseline;
 		gap: 1.5rem;
-		margin-bottom: 5rem;
-		font-size: 0.8rem;
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
-		border-bottom: 1px solid var(--border-color);
-		padding-bottom: 1.5rem;
-	}
-
-	.site-nav a {
-		color: var(--text-secondary);
-		text-decoration: none;
-		transition: color 0.2s ease;
-	}
-
-	.site-nav a:hover {
-		color: var(--accent-color);
-	}
-
-	header {
-		text-align: center;
+		padding-bottom: 1.25rem;
 		margin-bottom: 4rem;
-		border-bottom: 1px solid var(--border-color);
-		padding-bottom: 3rem;
+		border-bottom: 1px solid var(--border);
 	}
-
-	.site-title {
-		font-family: 'Cormorant Garamond', serif;
-		font-size: 3rem;
+	.brand {
+		display: flex;
+		align-items: baseline;
+		gap: 0.75rem;
+		text-decoration: none;
+	}
+	.brand-name {
+		font-family: var(--serif);
+		font-size: 1.2rem;
 		font-weight: 600;
-		letter-spacing: 0.05em;
-		color: var(--text-primary);
-		margin-bottom: 0.75rem;
+		letter-spacing: 0.04em;
+		color: var(--text);
 	}
-
-	.site-tagline {
-		font-size: 1.05rem;
-		color: var(--text-secondary);
+	.brand-vol {
+		font-family: var(--serif);
 		font-style: italic;
-		font-family: 'Cormorant Garamond', serif;
-		letter-spacing: 0.02em;
+		color: var(--accent);
+		font-size: 0.95rem;
 	}
-
-	p {
-		margin-bottom: 1.75rem;
-		font-size: 1.05rem;
-		color: #d8d5ce;
-	}
-
-	footer {
-		text-align: center;
-		padding-top: 3rem;
-		margin-top: 6rem;
-		border-top: 1px solid var(--border-color);
-		color: var(--text-secondary);
-		font-size: 0.8rem;
-		letter-spacing: 0.05em;
+	.site-nav-links {
+		display: flex;
+		gap: 1.75rem;
+		font-size: 0.72rem;
 		text-transform: uppercase;
+		letter-spacing: 0.14em;
+	}
+	.site-nav-links a {
+		color: var(--text-muted);
+		text-decoration: none;
+		padding-bottom: 0.25rem;
+		border-bottom: 1px solid transparent;
+		transition: color 0.2s, border-color 0.2s;
+	}
+	.site-nav-links a:hover {
+		color: var(--accent);
+	}
+	.site-nav-links a[aria-current='page'] {
+		color: var(--text);
+		border-bottom-color: var(--accent);
 	}
 
-	@media (max-width: 600px) {
-		.site-title {
-			font-size: 2.3rem;
+	/* ---------- Shared type ---------- */
+	.kicker {
+		font-size: 0.7rem;
+		text-transform: uppercase;
+		letter-spacing: 0.16em;
+		color: var(--text-muted);
+	}
+	.kicker .accent {
+		color: var(--accent);
+	}
+
+	.page-title {
+		font-family: var(--serif);
+		font-weight: 600;
+		font-size: clamp(2.6rem, 8vw, 4rem);
+		line-height: 1.05;
+		letter-spacing: 0.01em;
+		color: var(--text);
+		text-wrap: balance;
+	}
+
+	.page-tagline {
+		font-family: var(--serif);
+		font-style: italic;
+		font-size: 1.3rem;
+		line-height: 1.5;
+		color: var(--text-muted);
+		margin-top: 0.75rem;
+		text-wrap: pretty;
+	}
+
+	.section-heading {
+		font-family: var(--serif);
+		font-weight: 500;
+		font-size: 1.35rem;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		color: var(--accent);
+	}
+
+	.text-link {
+		color: var(--text-muted);
+		font-size: 0.72rem;
+		text-transform: uppercase;
+		letter-spacing: 0.14em;
+		text-decoration: none;
+		transition: color 0.2s;
+	}
+	.text-link:hover {
+		color: var(--accent);
+	}
+
+	/* ---------- Footer ---------- */
+	.site-footer {
+		margin-top: 7rem;
+		padding-top: 3rem;
+		border-top: 1px solid var(--border);
+		text-align: center;
+	}
+	.footer-motto {
+		font-family: var(--serif);
+		font-style: italic;
+		font-size: 1.15rem;
+		color: var(--text-body);
+		margin: 1.25rem 0 0.75rem;
+	}
+	.footer-meta {
+		display: flex;
+		justify-content: center;
+		flex-wrap: wrap;
+		gap: 0.6rem;
+		font-size: 0.7rem;
+		text-transform: uppercase;
+		letter-spacing: 0.14em;
+		color: var(--text-muted);
+	}
+	.footer-meta a {
+		text-decoration: none;
+		transition: color 0.2s;
+	}
+	.footer-meta a:hover {
+		color: var(--accent);
+	}
+
+	@media (max-width: 560px) {
+		.container {
+			padding-top: 1.75rem;
+		}
+		.site-nav {
+			margin-bottom: 3rem;
+		}
+		.brand-vol {
+			display: none;
+		}
+		.site-nav-links {
+			gap: 1.25rem;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		html {
+			scroll-behavior: auto;
+		}
+		* {
+			transition: none !important;
 		}
 	}
 </style>

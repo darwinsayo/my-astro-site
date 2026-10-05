@@ -1,0 +1,149 @@
+---
+import { excerpt, formatDate, readingTime, splitList, type Post } from '../lib/posts';
+
+interface Props {
+	post: Post;
+	featured?: boolean;
+	headingLevel?: 'h2' | 'h3';
+}
+
+const { post, featured = false, headingLevel = 'h3' } = Astro.props;
+const { title, pubDate, categories, image, draft } = post.data;
+const href = `/dispatches/${post.id}`;
+const category = splitList(categories)[0];
+const Heading = headingLevel;
+---
+
+<article class:list={['card', { 'card--featured': featured, 'card--has-image': featured && image }]}>
+	{featured && <span class="card-flag">Latest dispatch</span>}
+	{featured && image && <img class="card-image" src={image} alt="" loading="lazy" />}
+	<div class="card-body">
+		<p class="kicker">
+			<time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+			{category && <> <span aria-hidden="true">·</span> <span class="accent">{category}</span></>}
+			{draft && <> <span aria-hidden="true">·</span> <span class="accent">Draft</span></>}
+		</p>
+		<Heading class="card-title">
+			<a href={href}>{title}</a>
+		</Heading>
+		<p class="card-excerpt">{excerpt(post)}</p>
+		<p class="card-more" aria-hidden="true">
+			<span>Read</span> <span class="arrow">&rarr;</span>
+			<span class="card-time">{readingTime(post)}</span>
+		</p>
+	</div>
+</article>
+
+<style>
+	.card {
+		position: relative;
+		background: var(--surface);
+		border: 1px solid var(--border);
+		padding: 2rem 2.25rem;
+		margin-bottom: 1.25rem;
+		transition: border-color 0.3s, background-color 0.3s, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+	.card:hover {
+		border-color: var(--accent);
+		background: var(--surface-hover);
+		transform: translateY(-2px);
+	}
+	/* whole card is clickable, but only the title is a real link */
+	.card-title a::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+	}
+	.card-title {
+		font-family: var(--serif);
+		font-weight: 600;
+		font-size: 1.75rem;
+		line-height: 1.2;
+		margin: 0.5rem 0 0.75rem;
+		text-wrap: balance;
+	}
+	.card-title a {
+		text-decoration: none;
+		color: var(--text);
+	}
+	.card-excerpt {
+		color: var(--text-muted);
+		font-size: 0.95rem;
+		line-height: 1.7;
+	}
+	.card-more {
+		margin-top: 1.25rem;
+		font-size: 0.7rem;
+		text-transform: uppercase;
+		letter-spacing: 0.16em;
+		color: var(--accent);
+		display: flex;
+		align-items: baseline;
+		gap: 0.4rem;
+	}
+	.arrow {
+		transition: transform 0.3s;
+	}
+	.card:hover .arrow {
+		transform: translateX(4px);
+	}
+	.card-time {
+		margin-left: auto;
+		color: var(--text-muted);
+	}
+
+	.card--featured {
+		border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+		background: linear-gradient(140deg, var(--surface) 0%, var(--surface-hover) 100%);
+		box-shadow: 0 18px 40px -20px var(--accent-soft), 0 0 0 1px var(--accent-soft) inset;
+		padding: 2.75rem;
+		margin-bottom: 2rem;
+	}
+	.card--featured .card-title {
+		font-size: clamp(2rem, 5vw, 2.5rem);
+	}
+	.card--featured .card-excerpt {
+		font-size: 1rem;
+		color: var(--text-body);
+	}
+	.card-flag {
+		position: absolute;
+		top: -0.6rem;
+		left: 2.5rem;
+		background: var(--bg);
+		color: var(--accent);
+		padding: 0 0.75rem;
+		font-size: 0.62rem;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+		line-height: 1.2rem;
+	}
+	.card--has-image {
+		display: grid;
+		grid-template-columns: 180px 1fr;
+		gap: 2rem;
+		align-items: start;
+	}
+	.card-image {
+		width: 100%;
+		aspect-ratio: 3 / 4;
+		object-fit: cover;
+		filter: grayscale(0.3) contrast(1.05);
+	}
+
+	@media (max-width: 560px) {
+		.card,
+		.card--featured {
+			padding: 1.75rem 1.4rem;
+		}
+		.card-flag {
+			left: 1.4rem;
+		}
+		.card--has-image {
+			grid-template-columns: 1fr;
+		}
+		.card-image {
+			aspect-ratio: 16 / 9;
+		}
+	}
+</style>

@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Entropy from '../components/Entropy.astro';
+---
+
+<BaseLayout title="Lost to entropy">
+	<section class="lost">
+		<p class="kicker">Error 404</p>
+		<h1 class="page-title">This page has drifted apart.</h1>
+		<p class="page-tagline">Whatever was here has given in to entropy, or was never here at all.</p>
+		<Entropy class="lost-dots" width={320} count={34} seed={404} />
+		<p class="links">
+			<a class="text-link" href="/">&larr; Back home</a>
+			<a class="text-link" href="/dispatches">All dispatches &rarr;</a>
+		</p>
+	</section>
+</BaseLayout>
+
+<style>
+	.lost {
+		padding: 2rem 0 1rem;
+	}
+	.lost .page-title {
+		margin-top: 1rem;
+	}
+	.lost :global(.lost-dots) {
+		margin: 3rem 0;
+	}
+	.links {
+		display: flex;
+		gap: 2rem;
+		flex-wrap: wrap;
+	}
+</style>
