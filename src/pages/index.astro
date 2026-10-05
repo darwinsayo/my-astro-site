@@ -13,7 +13,7 @@ const recent = rest.slice(0, 3);
 	<header class="hero">
 		<h1 class="page-title">Proverbial Entropy</h1>
 		<p class="page-tagline">Internal musings on modern chaos and the preservation of the soul.</p>
-		<Entropy class="hero-ornament" width={260} count={30} seed={11} />
+		<Entropy class="hero-ornament" width={340} count={38} seed={11} animate />
 	</header>
 
 	<section class="manifesto" aria-label="About this site">
@@ -58,6 +58,23 @@ const recent = rest.slice(0, 3);
 	}
 	.hero :global(.hero-ornament) {
 		margin-top: 2.25rem;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		.hero .page-title,
+		.hero .page-tagline {
+			animation: rise 1.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+		}
+		.hero .page-tagline {
+			animation-delay: 0.25s;
+		}
+	}
+	@keyframes rise {
+		from {
+			opacity: 0;
+			transform: translateY(12px);
+			filter: blur(4px);
+		}
 	}
 
 	.manifesto {

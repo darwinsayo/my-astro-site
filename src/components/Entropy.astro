@@ -9,10 +9,12 @@ interface Props {
 	width?: number;
 	seed?: number;
 	align?: 'left' | 'center';
+	/** Dots start in a neat row, then drift apart and keep gently wandering. */
+	animate?: boolean;
 	class?: string;
 }
 
-const { count = 26, width = 220, seed = 7, align = 'left', class: className } = Astro.props;
+const { count = 26, width = 220, seed = 7, align = 'left', animate = false, class: className } = Astro.props;
 const height = 28;
 const mid = height / 2;
 const rand = (i: number) => {
@@ -23,24 +25,45 @@ const step = (width - 8) / (count - 1);
 const dots = Array.from({ length: count }, (_, i) => {
 	const t = i / (count - 1);
 	const chaos = Math.pow(t, 2.2);
+	const cx = 4 + i * step + (rand(i) - 0.5) * step * 1.6 * chaos;
+	const cy = mid + (rand(i + 50) - 0.5) * (height - 6) * chaos;
 	return {
-		cx: 4 + i * step + (rand(i) - 0.5) * step * 1.6 * chaos,
-		cy: mid + (rand(i + 50) - 0.5) * (height - 6) * chaos,
+		cx,
+		cy,
 		r: 2 - chaos * (0.4 + rand(i + 99) * 0.9),
 		o: 1 - chaos * 0.65,
+		// for the animation: how far this dot sits from its "orderly" spot
+		style: [
+			`--ox:${(4 + i * step - cx).toFixed(2)}px`,
+			`--oy:${(mid - cy).toFixed(2)}px`,
+			`--i:${i}`,
+			`--wx:${((rand(i + 7) - 0.5) * 6 * chaos).toFixed(2)}px`,
+			`--wy:${((rand(i + 13) - 0.5) * 6 * chaos).toFixed(2)}px`,
+			`--dur:${(5 + rand(i + 21) * 5).toFixed(2)}s`,
+		].join(';'),
 	};
 });
 ---
 
 <svg
-	class:list={['entropy', `entropy--${align}`, className]}
+	class:list={['entropy', `entropy--${align}`, { 'entropy--animated': animate }, className]}
 	viewBox={`0 0 ${width} ${height}`}
 	width={width}
 	height={height}
 	aria-hidden="true"
 	focusable="false"
 >
-	{dots.map((d) => <circle cx={d.cx.toFixed(2)} cy={d.cy.toFixed(2)} r={d.r.toFixed(2)} opacity={d.o.toFixed(2)} />)}
+	{
+		dots.map((d) =>
+			animate ? (
+				<g class="settle" style={d.style}>
+					<circle class="wander" cx={d.cx.toFixed(2)} cy={d.cy.toFixed(2)} r={d.r.toFixed(2)} opacity={d.o.toFixed(2)} />
+				</g>
+			) : (
+				<circle cx={d.cx.toFixed(2)} cy={d.cy.toFixed(2)} r={d.r.toFixed(2)} opacity={d.o.toFixed(2)} />
+			),
+		)
+	}
 </svg>
 
 <style>
@@ -52,5 +75,43 @@ const dots = Array.from({ length: count }, (_, i) => {
 	}
 	.entropy--center {
 		margin-inline: auto;
+	}
+	.entropy--animated {
+		overflow: visible;
+	}
+
+	@media (prefers-reduced-motion: no-preference) {
+		/* 1. dots appear one by one in a perfectly straight row
+		   2. after a beat, they drift apart into disorder
+		   3. the scattered ones keep wandering, slowly, forever */
+		.entropy--animated .settle {
+			opacity: 0;
+			animation:
+				appear 0.5s ease-out calc(var(--i) * 45ms) forwards,
+				scatter 2.2s cubic-bezier(0.65, 0, 0.35, 1) calc(1.9s + var(--i) * 25ms) both;
+			transform: translate(0, 0);
+		}
+		.entropy--animated .wander {
+			animation: wander var(--dur) ease-in-out calc(4.5s + var(--i) * 60ms) infinite alternate;
+		}
+	}
+
+	@keyframes appear {
+		to {
+			opacity: 1;
+		}
+	}
+	@keyframes scatter {
+		from {
+			transform: translate(var(--ox), var(--oy));
+		}
+		to {
+			transform: translate(0, 0);
+		}
+	}
+	@keyframes wander {
+		to {
+			transform: translate(var(--wx), var(--wy));
+		}
 	}
 </style>
