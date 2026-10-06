@@ -1,6 +1,6 @@
 ---
 title: "Consumerism: Just For Show"
-pubDate: 2026-10-04
+pubDate: 2026-10-06
 description: Do we consume because it looks good? What should we do instead?
 author: Anaïs Martín
 categories: Psychology
