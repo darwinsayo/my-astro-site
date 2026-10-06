@@ -1,6 +1,6 @@
 ---
 title: "Understanding Why: The Modern Classics"
-pubDate: 2026-09-30
+pubDate: 2026-10-06
 description: Understanding the modern classics
 author: Anaïs Martín
 categories: Academic Musings
