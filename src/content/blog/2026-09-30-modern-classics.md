@@ -9,7 +9,7 @@ draft: false
 ---
 Reading modern classics can help us to better understand the world and human experiences, by offering commentaries about them, whether wonderous or controversial.
 
-Modern classic literature is recognized as books written from the 20th century and having a lasting literary significance. Oscar Wilde wrote in The Picture of Dorien Grey, "The books that the world calls immoral are the books that show the world it's own shame" (Wilde, 1890.) Although modern classic literature may be a common term, most would be even more familiar with the phrase "banned book." Even though these books were controversial, they still have a place on your bookshelf. They are not only ahead of their time, but also timeless.
+Modern classic literature is recognized as books written from the 20th century and having a lasting literary significance. Oscar Wilde wrote in The Picture of Dorian Grey, "The books that the world calls immoral are the books that show the world it's own shame" (Wilde, 1890.) Although modern classic literature may be a common term, most would be even more familiar with the phrase "banned book." Even though these books were controversial, they still have a place on your bookshelf. They are not only ahead of their time, but also timeless.
 
 Let's take a look at some modern classics.
 
