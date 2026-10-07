@@ -3,7 +3,7 @@ title: "Understanding Why: The Modern Classics"
 pubDate: 2026-09-28
 description: Understanding the modern classics
 author: Anaïs Martín
-categories: Academic Musings
+categories: Literature
 tags: "Modern Classic Lit. Literature. Politics. "
 draft: false
 ---
