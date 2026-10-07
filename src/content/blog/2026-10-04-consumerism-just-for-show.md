@@ -1,7 +1,7 @@
 ---
 title: "Consumerism: Just For Show"
 pubDate: 2026-10-06
-description: Do we consume because it looks good? What should we do instead?
+description: Do we purchase because it looks good? What should we do instead?
 author: Anaïs Martín
 categories: Psychology
 tags: Consumerism, psychology, coffee
